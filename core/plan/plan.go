@@ -10,6 +10,7 @@ type BuildPlan struct {
 	Caches  map[string]*Cache `json:"caches,omitempty"`
 	Secrets []string          `json:"secrets,omitempty"`
 	Deploy  Deploy            `json:"deploy,omitempty"`
+	Service string            `json:"service,omitempty"`
 }
 
 type Deploy struct {

@@ -82,6 +82,27 @@ func TestSerialization(t *testing.T) {
 	}
 }
 
+func TestServiceFieldSerialization(t *testing.T) {
+	jsonPlan := `{
+		"service": "my-service",
+		"steps": [],
+		"secrets": []
+	}`
+
+	var plan BuildPlan
+	err := json.Unmarshal([]byte(jsonPlan), &plan)
+	require.NoError(t, err)
+	require.Equal(t, "my-service", plan.Service)
+
+	serialized, err := json.MarshalIndent(&plan, "", "  ")
+	require.NoError(t, err)
+
+	var plan2 BuildPlan
+	err = json.Unmarshal(serialized, &plan2)
+	require.NoError(t, err)
+	require.Equal(t, "my-service", plan2.Service)
+}
+
 func TestNormalize(t *testing.T) {
 	tests := []struct {
 		name         string

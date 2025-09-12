@@ -11,20 +11,24 @@ with support for Node, Python, Go, PHP, and more.
 
 # Architecture
 
-- **Core**: Analyzes apps and generates JSON build plans using language
-  providers
-- **BuildKit**: Converts build plans to BuildKit LLB (Low-Level Builder) format
+- **Core** (`core/`): Analyzes apps and generates JSON build plans using language
+  providers. Main logic in `core.go`, with build plan generation in `plan/`
+- **BuildKit** (`buildkit/`): Converts build plans to BuildKit LLB (Low-Level Builder) format
   for efficient image construction
-- **CLI**: Main entry point that coordinates core analysis and BuildKit
+- **CLI** (`cli/`, `cmd/cli/`): Main entry point that coordinates core analysis and BuildKit
   execution
-- **Providers**: Language-specific modules that detect project types (e.g. Node
-  detects package.json) and generate appropriate build steps
+- **Providers** (`core/providers/`): Language-specific modules that detect project types (e.g. Node
+  detects package.json) and generate appropriate build steps. Each provider implements
+  the `Provider` interface with `Detect()`, `Initialize()`, and `Plan()` methods
 
 # Bash commands
 
 - `mise run build` - Build the CLI binary
 - `mise run check` - Run linting, formatting, and static analysis
 - `mise run test` - Run unit tests
+- `mise run test-integration` - Run integration tests (builds and runs example apps)
+- `mise run test-update-snapshots` - Update snapshot tests after intentional changes
+- `mise run setup` - Set up local development environment with BuildKit container
 
 # Code style
 

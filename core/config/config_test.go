@@ -304,6 +304,57 @@ func TestMergeConfigStart(t *testing.T) {
 	}
 }
 
+func TestServiceField(t *testing.T) {
+	configJSON := `{
+		"service": "my-test-service",
+		"packages": {
+			"node": "22"
+		}
+	}`
+
+	var config Config
+	require.NoError(t, json.Unmarshal([]byte(configJSON), &config))
+	require.Equal(t, "my-test-service", config.Service)
+}
+
+func TestMergeConfigWithService(t *testing.T) {
+	config1JSON := `{
+		"service": "service-one",
+		"packages": {
+			"python": "latest"
+		}
+	}`
+
+	config2JSON := `{
+		"service": "service-two",
+		"packages": {
+			"node": "23"
+		}
+	}`
+
+	expectedJSON := `{
+		"service": "service-two",
+		"packages": {
+			"python": "latest",
+			"node": "23"
+		},
+		"steps": {},
+		"caches": {},
+		"deploy": {}
+	}`
+
+	var config1, config2, expected Config
+	require.NoError(t, json.Unmarshal([]byte(config1JSON), &config1))
+	require.NoError(t, json.Unmarshal([]byte(config2JSON), &config2))
+	require.NoError(t, json.Unmarshal([]byte(expectedJSON), &expected))
+
+	result := Merge(&config1, &config2)
+
+	if diff := cmp.Diff(expected, *result); diff != "" {
+		t.Errorf("configs mismatch (-want +got):\n%s", diff)
+	}
+}
+
 func TestGetJsonSchema(t *testing.T) {
 	schema := GetJsonSchema()
 	require.NotEmpty(t, schema)

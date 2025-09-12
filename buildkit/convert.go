@@ -62,6 +62,21 @@ func ConvertPlanToLLB(plan *p.BuildPlan, opts ConvertPlanOptions) (*llb.State, *
 		startCommand = "/bin/bash"
 	}
 
+	imageConfig := specs.ImageConfig{
+		Env:        imageEnv,
+		WorkingDir: WorkingDir,
+		Entrypoint: []string{"/bin/bash", "-c"},
+		Cmd:        []string{startCommand},
+	}
+
+	// Add service label if specified in the build plan
+	if plan.Service != "" {
+		if imageConfig.Labels == nil {
+			imageConfig.Labels = make(map[string]string)
+		}
+		imageConfig.Labels["service"] = plan.Service
+	}
+
 	image := Image{
 		Image: specs.Image{
 			Platform: specs.Platform{
@@ -73,12 +88,7 @@ func ConvertPlanToLLB(plan *p.BuildPlan, opts ConvertPlanOptions) (*llb.State, *
 			},
 		},
 		Variant: platform.Variant,
-		Config: specs.ImageConfig{
-			Env:        imageEnv,
-			WorkingDir: WorkingDir,
-			Entrypoint: []string{"/bin/bash", "-c"},
-			Cmd:        []string{startCommand},
-		},
+		Config:  imageConfig,
 	}
 
 	return &state, &image, nil
